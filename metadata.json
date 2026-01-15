@@ -1,0 +1,7 @@
+{
+  "name": "Itero Tech Voice Assistant",
+  "description": "A high-fidelity voice agent for Itero Technologies customer service, specializing in chemical recycling, the West London Pilot Plant (WLPP), and mixed plastic waste processing.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
