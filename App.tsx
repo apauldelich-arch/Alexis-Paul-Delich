@@ -1,9 +1,9 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { GoogleGenAI, Modality, LiveServerMessage } from '@google/genai';
-import { ConnectionStatus, Message } from './types';
-import { ITERO_SYSTEM_INSTRUCTION, WASTE_TYPES } from './constants';
-import { decode, encode, decodeAudioData, createBlob } from './utils/audio';
+import { ConnectionStatus, Message } from './types.ts';
+import { ITERO_SYSTEM_INSTRUCTION, WASTE_TYPES } from './constants.ts';
+import { decode, encode, decodeAudioData, createBlob } from './utils/audio.ts';
 
 // UI Components: Custom Itero Logo SVG
 const IteroLogo = ({ className = "w-10 h-10" }: { className?: string }) => (
@@ -190,7 +190,7 @@ const App: React.FC = () => {
   const toggleMute = () => setIsMuted(!isMuted);
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-950 text-slate-100">
+    <div className="min-h-screen flex flex-col bg-slate-950 text-slate-100 animate-in fade-in duration-700">
       <Header />
 
       <main className="flex-1 max-w-6xl w-full mx-auto p-4 md:p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -249,10 +249,8 @@ const App: React.FC = () => {
         {/* Voice Interface */}
         <div className="lg:col-span-2 flex flex-col gap-6">
           <div className="bg-slate-900/40 rounded-[2.5rem] flex-1 flex flex-col border border-slate-800 overflow-hidden relative min-h-[500px] shadow-2xl backdrop-blur-sm">
-            {/* Background Grid Accent */}
             <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#FE5733 1px, transparent 0)', backgroundSize: '40px 40px' }}></div>
             
-            {/* Visualizer Area */}
             <div className="flex-1 flex flex-col items-center justify-center p-8 relative">
               <div className="relative">
                 <div className={`w-64 h-64 rounded-full flex items-center justify-center transition-all duration-1000 ${
@@ -294,7 +292,6 @@ const App: React.FC = () => {
                 </p>
               </div>
 
-              {/* Real-time transcription bubble */}
               {(currentInputText || currentOutputText) && (
                 <div className="absolute bottom-10 left-10 right-10 bg-[#0f172a]/95 backdrop-blur-2xl p-6 rounded-[2rem] border border-[#FE5733]/40 shadow-[0_20px_50px_rgba(0,0,0,0.5)] animate-in fade-in slide-in-from-bottom-8 duration-500">
                   <div className="flex items-center justify-between mb-4">
@@ -302,7 +299,6 @@ const App: React.FC = () => {
                       <span className="w-2 h-2 bg-[#FE5733] rounded-full animate-pulse"></span>
                       <span className="text-[11px] font-black text-[#FE5733] uppercase tracking-[0.2em]">Signal Processor</span>
                     </div>
-                    <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">v2.5_Flash</span>
                   </div>
                   <div className="text-[15px] font-medium leading-relaxed max-h-32 overflow-y-auto custom-scrollbar">
                     {currentInputText && <p className="text-slate-400 mb-2 italic">"{currentInputText}"</p>}
@@ -312,7 +308,6 @@ const App: React.FC = () => {
               )}
             </div>
 
-            {/* Controls */}
             <div className="p-10 bg-slate-900/80 border-t border-slate-800 flex items-center justify-center gap-8">
               <button 
                 onClick={toggleMute}
@@ -320,7 +315,6 @@ const App: React.FC = () => {
                 className={`w-14 h-14 rounded-2xl flex items-center justify-center border-2 transition-all duration-300 ${
                   isMuted ? 'bg-[#981600]/30 border-[#981600]/60 text-[#FE5733]' : 'bg-slate-800/50 border-slate-700 text-slate-300 hover:border-[#FE5733]/50'
                 } disabled:opacity-20`}
-                title={isMuted ? "Unmute" : "Mute"}
               >
                 <i className={`fa-solid ${isMuted ? 'fa-microphone-slash' : 'fa-microphone'} text-xl`}></i>
               </button>
@@ -343,9 +337,7 @@ const App: React.FC = () => {
             </div>
           </div>
 
-          {/* Transcript History */}
           <div className="bg-slate-900/50 rounded-[2.5rem] p-8 border border-slate-800 flex-1 min-h-[250px] flex flex-col shadow-2xl relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-[#FE5733]/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
             <h4 className="text-xs font-black text-slate-500 uppercase tracking-[0.2em] mb-6 flex items-center gap-3">
               <div className="w-1.5 h-1.5 bg-[#FE5733] rounded-full"></div>
               Technical Consultation History
@@ -366,15 +358,6 @@ const App: React.FC = () => {
                     }`}>
                       {msg.text}
                     </div>
-                    <div className="flex items-center gap-2 mt-2 px-1">
-                      <span className="text-[10px] font-black text-slate-600 uppercase tracking-tighter">
-                        {msg.role === 'user' ? 'Inquiry' : 'Expert Analysis'}
-                      </span>
-                      <span className="text-[10px] text-slate-700 font-bold">•</span>
-                      <span className="text-[10px] font-bold text-slate-700 uppercase tracking-tighter">
-                        {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </span>
-                    </div>
                   </div>
                 ))
               )}
@@ -383,7 +366,6 @@ const App: React.FC = () => {
         </div>
       </main>
 
-      {/* Footer */}
       <footer className="p-12 bg-slate-950 border-t border-slate-900">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="text-center md:text-left">
@@ -391,18 +373,7 @@ const App: React.FC = () => {
               <IteroLogo className="w-6 h-6" />
               <h5 className="text-white font-black text-lg tracking-tighter uppercase">Itero Technologies Ltd</h5>
             </div>
-            <p className="text-slate-600 text-[11px] font-bold uppercase tracking-[0.25em]">Advancing the circular economy for plastic waste.</p>
           </div>
-          <div className="flex gap-10">
-            {['linkedin', 'twitter', 'vimeo'].map(social => (
-              <a key={social} href="#" className="text-slate-600 hover:text-[#FE5733] transition-all transform hover:scale-110">
-                <i className={`fa-brands fa-${social} text-2xl`}></i>
-              </a>
-            ))}
-          </div>
-        </div>
-        <div className="mt-12 text-center text-[9px] font-black text-slate-800 uppercase tracking-[0.4em] border-t border-slate-900/50 pt-8">
-          Authorized Itero AI Systems • Verified West London Pilot Plant • 2024
         </div>
       </footer>
 
@@ -411,10 +382,6 @@ const App: React.FC = () => {
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 20px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #FE5733; }
-        @keyframes bounce-custom {
-          0%, 100% { transform: scaleY(0.5); }
-          50% { transform: scaleY(1.2); }
-        }
       `}</style>
     </div>
   );
