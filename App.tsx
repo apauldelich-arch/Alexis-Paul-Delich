@@ -352,6 +352,8 @@ const App: React.FC = () => {
             </div>
           </div>
         </div>
+        <main className="min-h-screen flex items-center justify-center text-white text-2xl">
+  🎉 Hello from Vite + React + Tailwind + Vercel!
       </main>
 
       {/* Footer */}
