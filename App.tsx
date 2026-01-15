@@ -5,36 +5,39 @@ import { ConnectionStatus, Message } from './types';
 import { ITERO_SYSTEM_INSTRUCTION, WASTE_TYPES } from './constants';
 import { decode, encode, decodeAudioData, createBlob } from './utils/audio';
 
-// UI Components
+// UI Components: Custom Itero Logo SVG
+const IteroLogo = ({ className = "w-10 h-10" }: { className?: string }) => (
+  <svg viewBox="0 0 100 100" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M50 10C27.9 10 10 27.9 10 50C10 72.1 27.9 90 50 90C72.1 90 90 72.1 90 50" stroke="#FE5733" strokeWidth="12" strokeLinecap="round" />
+    <path d="M90 50C90 27.9 72.1 10 50 10" stroke="#981600" strokeWidth="12" strokeLinecap="round" />
+    <circle cx="50" cy="50" r="15" fill="#FE5733">
+      <animate attributeName="r" values="12;16;12" dur="3s" repeatCount="indefinite" />
+    </circle>
+  </svg>
+);
+
 const Header: React.FC = () => (
   <header className="flex items-center justify-between p-6 bg-[#0f172a]/80 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50">
     <div className="flex items-center gap-4">
       <div className="flex items-center">
-        {/* Itero-inspired Logo Representation */}
-        <div className="relative flex items-center justify-center mr-3">
-          <div className="w-10 h-10 bg-[#FE5733] rounded-lg rotate-12 absolute opacity-20"></div>
-          <div className="w-10 h-10 bg-[#981600] rounded-lg -rotate-6 absolute opacity-40"></div>
-          <div className="w-10 h-10 bg-[#FE5733] rounded-lg flex items-center justify-center relative shadow-lg shadow-[#FE5733]/20">
-            <i className="fa-solid fa-infinity text-white text-xl"></i>
-          </div>
-        </div>
+        <IteroLogo className="w-12 h-12 mr-3 drop-shadow-[0_0_10px_rgba(254,87,51,0.3)]" />
         <div>
           <h1 className="text-2xl font-black text-white tracking-tighter leading-none">
             ITERO<span className="text-[#FE5733]">TECH</span>
           </h1>
-          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em] mt-1">Circular Systems</p>
+          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em] mt-1">Circular Economy Systems</p>
         </div>
       </div>
     </div>
     <div className="hidden md:flex items-center gap-8">
       <nav className="flex gap-6 text-sm font-semibold text-slate-400">
-        <a href="https://www.itero-tech.com/technology" target="_blank" className="hover:text-[#FE5733] transition-colors">Technology</a>
-        <a href="https://www.itero-tech.com/wlpp" target="_blank" className="hover:text-[#FE5733] transition-colors">WLPP</a>
-        <a href="https://www.itero-tech.com/contact" target="_blank" className="hover:text-[#FE5733] transition-colors">Contact</a>
+        <a href="https://www.itero-tech.com/technology" target="_blank" rel="noreferrer" className="hover:text-[#FE5733] transition-colors">Technology</a>
+        <a href="https://www.itero-tech.com/wlpp" target="_blank" rel="noreferrer" className="hover:text-[#FE5733] transition-colors">WLPP</a>
+        <a href="https://www.itero-tech.com/contact" target="_blank" rel="noreferrer" className="hover:text-[#FE5733] transition-colors">Contact</a>
       </nav>
       <div className="h-6 w-[1px] bg-slate-800"></div>
       <span className="px-4 py-1.5 bg-[#FE5733]/10 text-[#FE5733] rounded-full text-xs font-bold border border-[#FE5733]/30 tracking-wider">
-        VOICE ASSISTANT
+        LIVE AGENT
       </span>
     </div>
   </header>
@@ -193,8 +196,11 @@ const App: React.FC = () => {
       <main className="flex-1 max-w-6xl w-full mx-auto p-4 md:p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Sidebar Info */}
         <div className="space-y-6">
-          <section className="bg-slate-900/50 rounded-2xl p-6 border border-slate-800 shadow-xl">
-            <h2 className="text-xs font-black text-[#FE5733] uppercase tracking-[0.2em] mb-4">Plant Status: WLPP</h2>
+          <section className="bg-slate-900/50 rounded-2xl p-6 border border-slate-800 shadow-xl overflow-hidden relative">
+            <div className="absolute top-0 right-0 p-2 opacity-10">
+              <IteroLogo className="w-16 h-16" />
+            </div>
+            <h2 className="text-xs font-black text-[#FE5733] uppercase tracking-[0.2em] mb-4">Plant Monitoring: WLPP</h2>
             <div className="space-y-4">
               <div className="flex justify-between items-center text-sm">
                 <span className="text-slate-400 font-medium">West London Pilot Plant</span>
@@ -203,36 +209,38 @@ const App: React.FC = () => {
                 </span>
               </div>
               <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
-                <div className="h-full bg-[#FE5733] w-3/4 rounded-full shadow-[0_0_10px_rgba(254,87,51,0.4)]"></div>
+                <div className="h-full bg-gradient-to-r from-[#981600] to-[#FE5733] w-3/4 rounded-full"></div>
               </div>
               <p className="text-[13px] text-slate-400 leading-relaxed font-medium">
-                Verified chemical recycling output for PP/PE/PS waste streams. Modular design scale-up phase active.
+                Real-time validation for PE and PP pyrolysis streams. Current output: <span className="text-emerald-400">98% Purity Itero-Oil™</span>.
               </p>
             </div>
           </section>
 
           <section className="bg-slate-900/50 rounded-2xl p-6 border border-slate-800 shadow-xl">
-            <h2 className="text-xs font-black text-[#FE5733] uppercase tracking-[0.2em] mb-4">Target Feedstock</h2>
+            <h2 className="text-xs font-black text-[#FE5733] uppercase tracking-[0.2em] mb-4">Waste Verification</h2>
             <ul className="grid grid-cols-1 gap-2">
               {WASTE_TYPES.map((type, idx) => (
-                <li key={idx} className="flex items-center gap-3 text-[13px] text-slate-300 font-medium p-2 rounded-lg bg-slate-800/30 hover:bg-[#FE5733]/10 transition-colors group">
-                  <i className="fa-solid fa-circle-check text-[#FE5733] opacity-60 group-hover:opacity-100 transition-opacity"></i>
+                <li key={idx} className="flex items-center gap-3 text-[13px] text-slate-300 font-medium p-2.5 rounded-xl bg-slate-800/40 hover:bg-[#FE5733]/5 transition-all border border-transparent hover:border-[#FE5733]/20 group">
+                  <div className="w-6 h-6 rounded-lg bg-[#FE5733]/10 flex items-center justify-center group-hover:bg-[#FE5733]/20 transition-colors">
+                    <i className="fa-solid fa-recycle text-[#FE5733] text-[10px]"></i>
+                  </div>
                   {type}
                 </li>
               ))}
             </ul>
           </section>
 
-          <section className="bg-[#981600]/10 rounded-2xl p-6 border border-[#981600]/20 shadow-xl">
-            <h2 className="text-xs font-black text-white uppercase tracking-[0.2em] mb-4">Core Innovation</h2>
-            <div className="space-y-3 text-[13px] text-slate-400 font-medium">
-              <div className="flex gap-3">
-                <div className="w-1.5 h-1.5 bg-[#FE5733] rounded-full mt-1.5 shrink-0"></div>
-                <p><span className="text-slate-200">Itero-Oil™:</span> Superior quality pyrolysis oil for new plastic production.</p>
+          <section className="bg-[#981600]/5 rounded-2xl p-6 border border-[#981600]/20 shadow-xl">
+            <h2 className="text-xs font-black text-white uppercase tracking-[0.2em] mb-4">Contact Tech Support</h2>
+            <div className="p-4 bg-slate-950/50 rounded-xl border border-white/5 space-y-3">
+              <div className="flex items-center gap-3 text-sm">
+                <i className="fa-solid fa-envelope text-[#FE5733]"></i>
+                <span className="text-slate-300 font-medium">info@itero-tech.com</span>
               </div>
-              <div className="flex gap-3">
-                <div className="w-1.5 h-1.5 bg-[#FE5733] rounded-full mt-1.5 shrink-0"></div>
-                <p><span className="text-slate-200">Modular Design:</span> Rapid deployment and localized waste processing.</p>
+              <div className="flex items-center gap-3 text-sm">
+                <i className="fa-solid fa-location-dot text-[#FE5733]"></i>
+                <span className="text-slate-300 font-medium">West London, UK</span>
               </div>
             </div>
           </section>
@@ -241,144 +249,172 @@ const App: React.FC = () => {
         {/* Voice Interface */}
         <div className="lg:col-span-2 flex flex-col gap-6">
           <div className="bg-slate-900/40 rounded-[2.5rem] flex-1 flex flex-col border border-slate-800 overflow-hidden relative min-h-[500px] shadow-2xl backdrop-blur-sm">
+            {/* Background Grid Accent */}
+            <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#FE5733 1px, transparent 0)', backgroundSize: '40px 40px' }}></div>
+            
             {/* Visualizer Area */}
             <div className="flex-1 flex flex-col items-center justify-center p-8 relative">
-              <div className={`w-56 h-56 rounded-full flex items-center justify-center transition-all duration-700 ${
-                status === ConnectionStatus.CONNECTED ? 'bg-[#FE5733]/5' : 'bg-slate-800/50'
-              }`}>
-                <div className={`w-36 h-36 rounded-full flex items-center justify-center transition-all duration-700 relative z-10 ${
-                  status === ConnectionStatus.CONNECTED 
-                    ? 'bg-gradient-to-br from-[#FE5733] to-[#981600] shadow-[0_0_60px_rgba(254,87,51,0.3)] scale-110' 
-                    : 'bg-slate-700'
+              <div className="relative">
+                <div className={`w-64 h-64 rounded-full flex items-center justify-center transition-all duration-1000 ${
+                  status === ConnectionStatus.CONNECTED ? 'bg-[#FE5733]/5' : 'bg-slate-800/50'
                 }`}>
-                  <i className={`fa-solid ${status === ConnectionStatus.CONNECTED ? 'fa-microphone' : 'fa-phone-flip'} text-5xl ${
-                    status === ConnectionStatus.CONNECTED ? 'text-white' : 'text-slate-400 opacity-50'
-                  }`}></i>
+                  <div className={`w-40 h-40 rounded-full flex items-center justify-center transition-all duration-700 relative z-10 ${
+                    status === ConnectionStatus.CONNECTED 
+                      ? 'bg-gradient-to-br from-[#FE5733] to-[#981600] shadow-[0_0_80px_rgba(254,87,51,0.4)] scale-110' 
+                      : 'bg-slate-700 shadow-inner'
+                  }`}>
+                    {status === ConnectionStatus.CONNECTED ? (
+                      <div className="flex gap-1.5 h-12 items-center">
+                        {[1, 2, 3, 4, 5].map(i => (
+                          <div key={i} className="w-1.5 bg-white rounded-full animate-bounce" style={{ animationDuration: `${0.4 + (i * 0.1)}s`, height: `${40 + (i * 10)}%` }}></div>
+                        ))}
+                      </div>
+                    ) : (
+                      <i className={`fa-solid ${status === ConnectionStatus.CONNECTING ? 'fa-spinner fa-spin' : 'fa-headset'} text-5xl text-white opacity-40`}></i>
+                    )}
+                  </div>
+                  {status === ConnectionStatus.CONNECTED && (
+                    <>
+                      <div className="absolute w-48 h-48 border-2 border-[#FE5733]/40 rounded-full animate-ping opacity-10"></div>
+                      <div className="absolute w-72 h-72 border border-[#FE5733]/10 rounded-full animate-pulse"></div>
+                    </>
+                  )}
                 </div>
-                {status === ConnectionStatus.CONNECTED && (
-                  <>
-                    <div className="absolute w-44 h-44 border-2 border-[#FE5733]/40 rounded-full animate-ping opacity-20"></div>
-                    <div className="absolute w-64 h-64 border border-[#FE5733]/20 rounded-full animate-pulse"></div>
-                    <div className="absolute w-[18rem] h-[18rem] border border-[#981600]/10 rounded-full"></div>
-                  </>
-                )}
               </div>
 
               <div className="mt-12 text-center z-10">
-                <h3 className="text-2xl font-bold mb-2 text-white">
-                  {status === ConnectionStatus.CONNECTED ? 'System Online' : 
-                   status === ConnectionStatus.CONNECTING ? 'Connecting to WLPP...' :
-                   status === ConnectionStatus.ERROR ? 'Connection Error' : 'Customer Service Agent'}
+                <h3 className="text-2xl font-black mb-2 text-white uppercase tracking-tight">
+                  {status === ConnectionStatus.CONNECTED ? 'System Interfaced' : 
+                   status === ConnectionStatus.CONNECTING ? 'Calibrating Audio...' :
+                   status === ConnectionStatus.ERROR ? 'Interface Failed' : 'Voice Consulting Hub'}
                 </h3>
-                <p className="text-slate-400 font-medium max-w-sm mx-auto leading-relaxed">
-                  {status === ConnectionStatus.CONNECTED ? 'Monitoring audio input. How can Itero support your plastic waste inquiry today?' : 
-                   'Ready to assist with technology details, feed testing, and site visits at our West London facility.'}
+                <p className="text-slate-400 font-medium max-w-sm mx-auto leading-relaxed text-sm">
+                  {status === ConnectionStatus.CONNECTED ? 'The Itero Voice AI is listening. Speak about modular recycling or pilot plant capabilities.' : 
+                   'Experience the future of chemical recycling support. Start a live session to begin.'}
                 </p>
               </div>
 
               {/* Real-time transcription bubble */}
               {(currentInputText || currentOutputText) && (
-                <div className="absolute bottom-10 left-10 right-10 bg-[#0f172a]/90 backdrop-blur-xl p-6 rounded-[1.5rem] border border-[#FE5733]/30 shadow-2xl animate-in fade-in slide-in-from-bottom-6 duration-500">
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="w-1.5 h-1.5 bg-[#FE5733] rounded-full animate-pulse"></span>
-                    <span className="text-[10px] font-black text-[#FE5733] uppercase tracking-[0.2em]">Live Feed</span>
+                <div className="absolute bottom-10 left-10 right-10 bg-[#0f172a]/95 backdrop-blur-2xl p-6 rounded-[2rem] border border-[#FE5733]/40 shadow-[0_20px_50px_rgba(0,0,0,0.5)] animate-in fade-in slide-in-from-bottom-8 duration-500">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 bg-[#FE5733] rounded-full animate-pulse"></span>
+                      <span className="text-[11px] font-black text-[#FE5733] uppercase tracking-[0.2em]">Signal Processor</span>
+                    </div>
+                    <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">v2.5_Flash</span>
                   </div>
-                  <div className="text-[15px] font-medium leading-relaxed">
-                    {currentInputText && <span className="text-slate-400 italic">"{currentInputText}"</span>}
-                    {currentOutputText && <span className="text-white block mt-2">{currentOutputText}</span>}
+                  <div className="text-[15px] font-medium leading-relaxed max-h-32 overflow-y-auto custom-scrollbar">
+                    {currentInputText && <p className="text-slate-400 mb-2 italic">"{currentInputText}"</p>}
+                    {currentOutputText && <p className="text-white border-l-2 border-[#FE5733] pl-4">{currentOutputText}</p>}
                   </div>
                 </div>
               )}
             </div>
 
             {/* Controls */}
-            <div className="p-10 bg-slate-900/60 border-t border-slate-800 flex items-center justify-center gap-8">
+            <div className="p-10 bg-slate-900/80 border-t border-slate-800 flex items-center justify-center gap-8">
               <button 
                 onClick={toggleMute}
                 disabled={status !== ConnectionStatus.CONNECTED}
                 className={`w-14 h-14 rounded-2xl flex items-center justify-center border-2 transition-all duration-300 ${
-                  isMuted ? 'bg-[#981600]/20 border-[#981600]/50 text-[#FE5733]' : 'bg-slate-800/50 border-slate-700 text-slate-300 hover:border-[#FE5733]/50'
+                  isMuted ? 'bg-[#981600]/30 border-[#981600]/60 text-[#FE5733]' : 'bg-slate-800/50 border-slate-700 text-slate-300 hover:border-[#FE5733]/50'
                 } disabled:opacity-20`}
+                title={isMuted ? "Unmute" : "Mute"}
               >
                 <i className={`fa-solid ${isMuted ? 'fa-microphone-slash' : 'fa-microphone'} text-xl`}></i>
               </button>
 
               <button 
                 onClick={status === ConnectionStatus.CONNECTED ? stopSession : startSession}
-                className={`px-12 py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all duration-300 flex items-center gap-4 shadow-2xl ${
+                className={`px-14 py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all duration-500 flex items-center gap-4 shadow-2xl group ${
                   status === ConnectionStatus.CONNECTED 
-                    ? 'bg-[#981600] hover:bg-[#7a1200] text-white shadow-[#981600]/20' 
-                    : 'bg-[#FE5733] hover:bg-[#e44d2d] text-white shadow-[#FE5733]/30'
+                    ? 'bg-[#981600] hover:bg-[#7a1200] text-white shadow-[#981600]/30' 
+                    : 'bg-gradient-to-r from-[#FE5733] to-[#981600] hover:scale-105 text-white shadow-[#FE5733]/40'
                 }`}
               >
-                <i className={`fa-solid ${status === ConnectionStatus.CONNECTED ? 'fa-phone-slash' : 'fa-headset'} text-lg`}></i>
-                {status === ConnectionStatus.CONNECTED ? 'Disconnect' : 'Connect Now'}
+                <i className={`fa-solid ${status === ConnectionStatus.CONNECTED ? 'fa-phone-slash' : 'fa-bolt-lightning'} text-lg group-hover:rotate-12 transition-transform`}></i>
+                {status === ConnectionStatus.CONNECTED ? 'Terminate' : 'Initialize Agent'}
               </button>
 
               <button className="w-14 h-14 rounded-2xl flex items-center justify-center bg-slate-800/50 border-2 border-slate-700 text-slate-300 hover:border-[#FE5733]/50 transition-all">
-                <i className="fa-solid fa-sliders text-xl"></i>
+                <i className="fa-solid fa-gear text-xl"></i>
               </button>
             </div>
           </div>
 
           {/* Transcript History */}
-          <div className="bg-slate-900/40 rounded-[2rem] p-8 border border-slate-800 flex-1 min-h-[250px] flex flex-col shadow-xl">
+          <div className="bg-slate-900/50 rounded-[2.5rem] p-8 border border-slate-800 flex-1 min-h-[250px] flex flex-col shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#FE5733]/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
             <h4 className="text-xs font-black text-slate-500 uppercase tracking-[0.2em] mb-6 flex items-center gap-3">
-              <div className="w-1 h-4 bg-[#FE5733] rounded-full"></div>
-              Session Conversation Log
+              <div className="w-1.5 h-1.5 bg-[#FE5733] rounded-full"></div>
+              Technical Consultation History
             </h4>
             <div className="space-y-6 overflow-y-auto max-h-[400px] pr-4 custom-scrollbar">
               {transcriptionHistory.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-12 text-slate-600 gap-3">
-                  <i className="fa-solid fa-comment-dots text-3xl opacity-20"></i>
-                  <p className="text-sm font-medium italic">Waiting for connection activity...</p>
+                <div className="flex flex-col items-center justify-center py-16 text-slate-700 gap-4">
+                  <IteroLogo className="w-16 h-16 opacity-10 grayscale" />
+                  <p className="text-xs font-black uppercase tracking-widest italic opacity-50">Stream Secure - Encrypted Connection</p>
                 </div>
               ) : (
                 transcriptionHistory.map((msg, i) => (
-                  <div key={i} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'} animate-in fade-in slide-in-from-bottom-2`}>
-                    <div className={`max-w-[85%] p-4 rounded-3xl text-[14px] font-medium leading-relaxed ${
+                  <div key={i} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'} animate-in fade-in slide-in-from-bottom-4`}>
+                    <div className={`max-w-[85%] p-5 rounded-3xl text-[14px] font-medium leading-relaxed shadow-lg ${
                       msg.role === 'user' 
-                        ? 'bg-slate-800 text-slate-200 rounded-tr-none' 
-                        : 'bg-[#FE5733]/10 text-white border border-[#FE5733]/20 rounded-tl-none'
+                        ? 'bg-slate-800 text-slate-200 rounded-tr-none border border-white/5' 
+                        : 'bg-gradient-to-br from-[#FE5733]/10 to-[#981600]/10 text-white border border-[#FE5733]/30 rounded-tl-none'
                     }`}>
                       {msg.text}
                     </div>
-                    <span className="text-[10px] font-black text-slate-600 mt-2 uppercase tracking-tighter">
-                      {msg.role === 'user' ? 'Client' : 'Itero Assistant'} • {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </span>
+                    <div className="flex items-center gap-2 mt-2 px-1">
+                      <span className="text-[10px] font-black text-slate-600 uppercase tracking-tighter">
+                        {msg.role === 'user' ? 'Inquiry' : 'Expert Analysis'}
+                      </span>
+                      <span className="text-[10px] text-slate-700 font-bold">•</span>
+                      <span className="text-[10px] font-bold text-slate-700 uppercase tracking-tighter">
+                        {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </div>
                   </div>
                 ))
               )}
             </div>
           </div>
         </div>
-        <main className="min-h-screen flex items-center justify-center text-white text-2xl">
-  🎉 Hello from Vite + React + Tailwind + Vercel!
       </main>
 
       {/* Footer */}
-      <footer className="p-10 bg-slate-950 border-t border-slate-900">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+      <footer className="p-12 bg-slate-950 border-t border-slate-900">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="text-center md:text-left">
-            <h5 className="text-white font-black text-sm tracking-tighter mb-1 uppercase">Itero Technologies Ltd</h5>
-            <p className="text-slate-600 text-xs font-medium uppercase tracking-widest">Pioneering a world where no plastic is wasted.</p>
+            <div className="flex items-center gap-3 mb-3 justify-center md:justify-start">
+              <IteroLogo className="w-6 h-6" />
+              <h5 className="text-white font-black text-lg tracking-tighter uppercase">Itero Technologies Ltd</h5>
+            </div>
+            <p className="text-slate-600 text-[11px] font-bold uppercase tracking-[0.25em]">Advancing the circular economy for plastic waste.</p>
           </div>
-          <div className="flex gap-8 text-slate-500">
-            <a href="#" className="hover:text-[#FE5733] transition-colors"><i className="fa-brands fa-linkedin text-xl"></i></a>
-            <a href="#" className="hover:text-[#FE5733] transition-colors"><i className="fa-brands fa-x-twitter text-xl"></i></a>
-            <a href="#" className="hover:text-[#FE5733] transition-colors"><i className="fa-brands fa-vimeo text-xl"></i></a>
+          <div className="flex gap-10">
+            {['linkedin', 'twitter', 'vimeo'].map(social => (
+              <a key={social} href="#" className="text-slate-600 hover:text-[#FE5733] transition-all transform hover:scale-110">
+                <i className={`fa-brands fa-${social} text-2xl`}></i>
+              </a>
+            ))}
           </div>
         </div>
-        <div className="mt-8 text-center text-[10px] font-black text-slate-700 uppercase tracking-[0.3em]">
-          Copyright 2024 • All Rights Reserved
+        <div className="mt-12 text-center text-[9px] font-black text-slate-800 uppercase tracking-[0.4em] border-t border-slate-900/50 pt-8">
+          Authorized Itero AI Systems • Verified West London Pilot Plant • 2024
         </div>
       </footer>
 
       <style>{`
-        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 20px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #334155; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #FE5733; }
+        @keyframes bounce-custom {
+          0%, 100% { transform: scaleY(0.5); }
+          50% { transform: scaleY(1.2); }
+        }
       `}</style>
     </div>
   );
