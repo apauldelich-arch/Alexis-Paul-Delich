@@ -45,6 +45,7 @@ const Header: React.FC = () => (
 
 const App: React.FC = () => {
   const [status, setStatus] = useState<ConnectionStatus>(ConnectionStatus.DISCONNECTED);
+  const [errorDetail, setErrorDetail] = useState<string | null>(null);
   const [transcriptionHistory, setTranscriptionHistory] = useState<Message[]>([]);
   const [isMuted, setIsMuted] = useState(false);
   const [currentInputText, setCurrentInputText] = useState('');
@@ -86,19 +87,40 @@ const App: React.FC = () => {
     setStatus(ConnectionStatus.DISCONNECTED);
     setCurrentInputText('');
     setCurrentOutputText('');
+    setErrorDetail(null);
   }, []);
 
   const startSession = async () => {
     try {
       setStatus(ConnectionStatus.CONNECTING);
+      setErrorDetail(null);
+
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error("Your browser does not support microphone access.");
+      }
+
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
-      inputAudioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 16000 });
-      outputAudioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
-      outputNodeRef.current = outputAudioContextRef.current.createGain();
-      outputNodeRef.current.connect(outputAudioContextRef.current.destination);
+      // Initialize Audio Contexts
+      const AudioCtx = (window as any).AudioContext || (window as any).webkitAudioContext;
+      inputAudioContextRef.current = new AudioCtx({ sampleRate: 16000 });
+      outputAudioContextRef.current = new AudioCtx({ sampleRate: 24000 });
+      
+      // Critical: Browsers require context to be explicitly resumed after user interaction
+      await inputAudioContextRef.current!.resume();
+      await outputAudioContextRef.current!.resume();
 
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      outputNodeRef.current = outputAudioContextRef.current!.createGain();
+      outputNodeRef.current.connect(outputAudioContextRef.current!.destination);
+
+      // Request Microphone Access
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true
+        } 
+      });
       streamRef.current = stream;
 
       const sessionPromise = ai.live.connect({
@@ -119,7 +141,7 @@ const App: React.FC = () => {
             const scriptProcessor = inputAudioContextRef.current!.createScriptProcessor(4096, 1, 1);
             
             scriptProcessor.onaudioprocess = (e) => {
-              if (isMuted) return;
+              if (isMuted || status !== ConnectionStatus.CONNECTED) return;
               const inputData = e.inputBuffer.getChannelData(0);
               const pcmBlob = createBlob(inputData);
               sessionPromise.then(session => {
@@ -164,7 +186,7 @@ const App: React.FC = () => {
             }
 
             if (message.serverContent?.interrupted) {
-              sourcesRef.current.forEach(s => s.stop());
+              sourcesRef.current.forEach(s => { try { s.stop(); } catch(e) {} });
               sourcesRef.current.clear();
               nextStartTimeRef.current = 0;
             }
@@ -172,6 +194,7 @@ const App: React.FC = () => {
           onerror: (e) => {
             console.error('Session error:', e);
             setStatus(ConnectionStatus.ERROR);
+            setErrorDetail("The connection to the AI service was interrupted.");
             stopSession();
           },
           onclose: () => {
@@ -181,9 +204,17 @@ const App: React.FC = () => {
       });
 
       sessionRef.current = await sessionPromise;
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to start session:', err);
       setStatus(ConnectionStatus.ERROR);
+      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+        setErrorDetail("Microphone access was denied. Please allow camera/mic permissions in your browser bar.");
+      } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+        setErrorDetail("No microphone was detected on this device.");
+      } else {
+        setErrorDetail(err.message || "Failed to initialize the voice interface.");
+      }
+      stopSession();
     }
   };
 
@@ -259,7 +290,7 @@ const App: React.FC = () => {
                   <div className={`w-40 h-40 rounded-full flex items-center justify-center transition-all duration-700 relative z-10 ${
                     status === ConnectionStatus.CONNECTED 
                       ? 'bg-gradient-to-br from-[#FE5733] to-[#981600] shadow-[0_0_80px_rgba(254,87,51,0.4)] scale-110' 
-                      : 'bg-slate-700 shadow-inner'
+                      : status === ConnectionStatus.ERROR ? 'bg-red-900/50 shadow-inner' : 'bg-slate-700 shadow-inner'
                   }`}>
                     {status === ConnectionStatus.CONNECTED ? (
                       <div className="flex gap-1.5 h-12 items-center">
@@ -268,7 +299,7 @@ const App: React.FC = () => {
                         ))}
                       </div>
                     ) : (
-                      <i className={`fa-solid ${status === ConnectionStatus.CONNECTING ? 'fa-spinner fa-spin' : 'fa-headset'} text-5xl text-white opacity-40`}></i>
+                      <i className={`fa-solid ${status === ConnectionStatus.CONNECTING ? 'fa-spinner fa-spin' : status === ConnectionStatus.ERROR ? 'fa-triangle-exclamation text-red-400' : 'fa-headset'} text-5xl text-white opacity-40`}></i>
                     )}
                   </div>
                   {status === ConnectionStatus.CONNECTED && (
@@ -281,15 +312,24 @@ const App: React.FC = () => {
               </div>
 
               <div className="mt-12 text-center z-10">
-                <h3 className="text-2xl font-black mb-2 text-white uppercase tracking-tight">
+                <h3 className={`text-2xl font-black mb-2 uppercase tracking-tight ${status === ConnectionStatus.ERROR ? 'text-red-400' : 'text-white'}`}>
                   {status === ConnectionStatus.CONNECTED ? 'System Interfaced' : 
                    status === ConnectionStatus.CONNECTING ? 'Calibrating Audio...' :
-                   status === ConnectionStatus.ERROR ? 'Interface Failed' : 'Voice Consulting Hub'}
+                   status === ConnectionStatus.ERROR ? 'Interface Error' : 'Voice Consulting Hub'}
                 </h3>
-                <p className="text-slate-400 font-medium max-w-sm mx-auto leading-relaxed text-sm">
+                <p className={`font-medium max-w-sm mx-auto leading-relaxed text-sm ${status === ConnectionStatus.ERROR ? 'text-red-400/80' : 'text-slate-400'}`}>
                   {status === ConnectionStatus.CONNECTED ? 'The Itero Voice AI is listening. Speak about modular recycling or pilot plant capabilities.' : 
+                   status === ConnectionStatus.ERROR ? (errorDetail || 'Please check your microphone and refresh.') :
                    'Experience the future of chemical recycling support. Start a live session to begin.'}
                 </p>
+                {status === ConnectionStatus.ERROR && (
+                   <button 
+                     onClick={() => window.location.reload()}
+                     className="mt-4 text-xs font-black text-white underline underline-offset-4 hover:text-[#FE5733] transition-colors"
+                   >
+                     REFRESH SYSTEM
+                   </button>
+                )}
               </div>
 
               {(currentInputText || currentOutputText) && (
